@@ -1,6 +1,6 @@
 Considerations:
 
-	This calculator operates only with integer values. The availabel operations are:
+	This calculator operates only with natural values. The available operations are:
 
 		- SUM(+), SUB(-), MUL(x), DIV(/), POW(^). Note that the division will be euclidean.
 
@@ -9,3 +9,7 @@ Considerations:
 		- Bad_Use: stack constraint error.  
 		- Space_Overflow: stack without available space.
 		- Constraint_error: command line operation not porperly formed.
+
+	Compiling:
+
+		gnatmake -o calculator.exec calculator.adb

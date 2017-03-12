@@ -5,46 +5,46 @@ with dstack;
 
 procedure calculator is 
 
-package integer_stack is new dstack (Item => Integer); use integer_stack;
+	package integer_stack is new dstack (Item => Integer); use integer_stack;
 
--- Operators
-SUM: constant Character:= '+'; 
-SUB: constant Character:= '-';
-DIV: constant Character:= '/';
-MUL: constant Character:= 'x';
-POW: constant Character:= '^';
+	-- Operators
+	SUM: constant Character:= '+'; 
+	SUB: constant Character:= '-';
+	DIV: constant Character:= '/';
+	MUL: constant Character:= 'x';
+	POW: constant Character:= '^';
 
--- Exceptions
-not_valid_operator: exception;
+	-- Exceptions
+	not_valid_operator: exception;
 
--- Variable declarations
-operators: constant array (1..5) of Character:= (SUM, SUB, DIV, MUL, POW);
-number_stack: stack;
-first_operand: Integer;
-second_operand: Integer;
-result: Integer:= 0;
+	-- Variable declarations
+	operators: constant array (1..5) of Character:= (SUM, SUB, DIV, MUL, POW);
+	number_stack: stack;
+	first_operand: Integer;
+	second_operand: Integer;
+	result: Integer:= 0;
 
--- Checks if the character is a valid operator
-function is_operator(operator: in Character) return boolean is
-begin
-	for i in 1..operators'last loop
-		if operator = operators(i) then return true; end if;
-	end loop;
-	return false;
-end is_operator;
+	-- Checks if the character is a valid operator
+	function is_operator(operator: in Character) return boolean is
+	begin
+		for i in 1..operators'last loop
+			if operator = operators(i) then return true; end if;
+		end loop;
+		return false;
+	end is_operator;
 
--- Calculus
-function operate(first_operand: in Integer; second_operand: in Integer; operator: in Character) return Integer is
-begin
-	case operator is
-		when SUM => return first_operand + second_operand;
-		when SUB => return first_operand - second_operand;
-		when DIV => return first_operand / second_operand;
-		when MUL => return first_operand * second_operand;
-		when POW => return first_operand ** second_operand;
-		when others => raise not_valid_operator;
-	end case;
-end operate;
+	-- Calculus
+	function operate(first_operand: in Integer; second_operand: in Integer; operator: in Character) return Integer is
+	begin
+		case operator is
+			when SUM => return first_operand + second_operand;
+			when SUB => return first_operand - second_operand;
+			when DIV => return first_operand / second_operand;
+			when MUL => return first_operand * second_operand;
+			when POW => return first_operand ** second_operand;
+			when others => raise not_valid_operator;
+		end case;
+	end operate;
 
 begin
 	empty(number_stack);

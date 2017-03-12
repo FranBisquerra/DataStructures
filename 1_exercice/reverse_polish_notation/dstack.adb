@@ -95,6 +95,6 @@ package body dstack is
 		when constraint_error => raise bad_use;
 	end pop;
 
-	begin
-		prep_mem_space;
-	end dstack;
+begin
+	prep_mem_space;
+end dstack;

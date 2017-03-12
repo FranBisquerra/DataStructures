@@ -1,0 +1,8 @@
+Considerations:
+	
+	To implement the dis_order algorithm 6 pointers are used, building two support lists. One list for the number with a lower value and one for the numbers that are the same or have a greater value. 
+	Then the lists are linked and the original list pointer re-pointed to the begining of the needed list.
+
+	Compiling:
+
+		gnatmake -o reorganizer.exec reorganizer.adb

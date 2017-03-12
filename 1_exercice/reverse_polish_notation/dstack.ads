@@ -12,6 +12,7 @@ package dstack is
 	procedure push (s: in out stack; x: in item);
 	procedure pop (s: in out stack);
 	function top (s: in stack) return item;
+	function top_pop(s: in out stack) return item;
 	function is_empty (s: in stack) return boolean;
 
 private

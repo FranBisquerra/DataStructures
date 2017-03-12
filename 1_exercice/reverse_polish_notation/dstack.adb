@@ -67,6 +67,14 @@ package body dstack is
 		when constraint_error => raise bad_use; 
 	end top;
 
+	function top_pop (s: in out stack) return item is 
+		element: item;
+	begin
+		element:= top(s);
+		pop(s);
+		return element;
+	end top_pop;
+
 	procedure push (s: in out stack; x: in item) is
 		top: index renames s.top;
 		aux: index;

@@ -1,0 +1,11 @@
+Considerations:
+
+	This calculator operates only with integer values. The availabel operations are:
+
+		- SUM(+), SUB(-), MUL(x), DIV(/), POW(^). Note that the division will be euclidean.
+
+	Exceptions: 
+
+		- Bad_Use: stack constraint error.  
+		- Space_Overflow: stack without available space.
+		- Constraint_error: command line operation not porperly formed.

@@ -15,7 +15,7 @@ package body dstack is
 		for i in index range 1..index'last-1 loop
 			ms(i).next:= i + 1;
 		end loop;
-		ms(index'last):= 0;
+		ms(index'last).next:= 0;
 		free:= 1;
 	end prep_mem_space;
 
@@ -29,10 +29,10 @@ package body dstack is
 		return aux;
 	end get_block;
 
-	procedure release_block (aux: in out block) is
+	procedure release_block (idx: in out index) is
 	begin 
-		ms(aux).next:= free;
-		free:= aux; aux:= 0;
+		ms(idx).next:= free;
+		free:= idx; idx:= 0;
 	end release_block;
 
 	procedure release_stack (top: in out index) is

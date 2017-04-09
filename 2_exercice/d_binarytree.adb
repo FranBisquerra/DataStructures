@@ -14,7 +14,7 @@ package body d_binarytree is
       return p=null;
    end is_empty;
 
-   procedure graft(t: out tree; lt, rt:in tree; x: in item) is
+   procedure graft(t: out tree; lt, rt: in tree; x: in item) is
       p: pnode renames t.root;
       pl: pnode renames lt.root;
       pr: pnode renames rt.root;
@@ -59,7 +59,7 @@ package body d_binarytree is
       if pl/=null then
          inordre_pnode(pl);
       end if;
-      --Put(Image(p.x));
+      Put(Image(p.x));
       if pr/=null then
          inordre_pnode(pr);
       end if;
@@ -73,21 +73,22 @@ package body d_binarytree is
       if pl/=null then
          inordre_pnode(pl);
       end if;
-      --Put(Image(p.x));
+      Put(Image(p.x));
       if pr/=null then
          inordre_pnode(pr);
       end if;
    end inordre;
 
-   procedure inordre_pnode(n: in pnode; r: in out traversal) is
+   procedure inordre_pnode(n: in pnode; r: in out traversal; index: in out idx) is
       p: pnode renames n;
       pl: pnode renames n.l;
       pr: pnode renames n.r;
    begin
+      index:=index+1;
       if pl/=null then
          inordre_pnode(pl);
       end if;
-      --r:=r&Image(p.x);
+      r(index):=p.x;
       if pr/=null then
          inordre_pnode(pr);
       end if;
@@ -97,20 +98,33 @@ package body d_binarytree is
       p: pnode renames t.root;
       pl: pnode renames t.root.l;
       pr: pnode renames t.root.r;
+      index: idx;
    begin
+      index:=0;
       if pl/=null then
-         inordre_pnode(pl, r);
+         inordre_pnode(pl, r, index);
       end if;
-      --r:=r&Image(p.x);
+      r(index):=p.x;
       if pr/=null then
-         inordre_pnode(pr, r);
+         inordre_pnode(pr, r, index);
       end if;
    end inordre;
 
    function right_tree(t: in tree; r: in traversal) return boolean is
       p: pnode renames t.root;
+      in_ordre: traversal;
+      index: idx;
+      right: boolean;
    begin
-      return true;
+      inordre(t, in_ordre);
+      index:=1;
+      right:= true;
+      while index < in_ordre'Last and right loop
+         if r(index) /= in_ordre(index) then
+            right:= false;
+         end if;
+      end loop;
+      return right;
    end right_tree;
 
 end d_binarytree;

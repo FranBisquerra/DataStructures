@@ -14,7 +14,7 @@ procedure is_it_binary is
     inorder_traversal: SB.Bounded_String;
     preorder_traversal: SB.Bounded_String;
     root: Natural:= 1;	
-    tree: char_tree;
+    t: tree;
 
     -- Delete blanks
     procedure delete_blanks(with_blanks: in out SB.Bounded_String) is
@@ -58,34 +58,38 @@ procedure is_it_binary is
     end split_inorder;
 
     -- Builds the binary tree based on the inorder and preorder traversals
-    function build_binary_tree(sub_inorder: in SB.Bounded_String ) return Integer is 
+    procedure build_binary_tree(r: in out tree; sub_inorder: in SB.Bounded_String) is 
         sub_inorder_l: SB.Bounded_String;
         sub_inorder_r: SB.Bounded_String;
-        result: Integer;
-        tree: char_tree;
+        t, lt, rt: tree;
+        c_root: Character;
     begin
         Put_Line("sub_inorder: "&SB.To_String(sub_inorder));
+        c_root:= SB.Element(preorder_traversal, root);
+        
+        -- keep iterating
         if SB.Length(sub_inorder) > 1 then 
-            split_inorder(SB.Element(preorder_traversal, root), sub_inorder, sub_inorder_l, sub_inorder_r);
+            split_inorder(c_root, sub_inorder, sub_inorder_l, sub_inorder_r);
             if SB.Length(sub_inorder_l) >= 1 then
                 root:= root + 1;
                 Put_Line("left, root: "&root'Img);
-                tree:= build_binary_tree(sub_inorder_l);
-                Put_Line("Set left child tree");
+                build_binary_tree(lt, sub_inorder_l);
             end if;
             if SB.Length(sub_inorder_r) >= 1 then
                 root:= root + 1;
                 Put_Line("right, root: " &root'Img);            
-                tree:= build_binary_tree(sub_inorder_r);
-                Put_Line("Set right child tree");
+                build_binary_tree(rt, sub_inorder_r);
             end if;
+            graft(r, lt, rt, c_root);
+            Put_Line("item: " & c_root);
+        -- is leaf
+        elsif SB.Length(sub_inorder) = 1 then 
+            graft(r, lt, rt, c_root);
+            Put_Line("leaf: " & c_root);
         end if;
-        Put_Line("leaf: " & SB.Element(preorder_traversal, root));
-        
-        return tree;
     end build_binary_tree;
 
-    result: Integer;
+    binary_tree: tree;
 begin
 
     -- Load traversals from file
@@ -96,9 +100,8 @@ begin
     delete_blanks(preorder_traversal);
     Close(source);
 
-    result:= build_binary_tree(inorder_traversal);
+    build_binary_tree(binary_tree, inorder_traversal);
     
-    Put_Line(""&result'Img);
 exception
     when End_Error =>
         Put_Line("Please check the tree_traversals file it must have only two lines, being the first one the inorder traversal");

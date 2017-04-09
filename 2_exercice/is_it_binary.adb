@@ -89,6 +89,23 @@ procedure is_it_binary is
         end if;
     end build_binary_tree;
 
+    -- String to 'traversal'
+    function to_traversal(str: in SB.Bounded_String) return traversal is
+        i: idx:= 1;
+        j: Natural:= 1;
+        tr: traversal;
+    begin
+    Put_Line("to tr");
+        while j <= SB.Length(str) loop
+            tr(i):= SB.Element(str, j);
+            Put(tr(i));
+            i:= i + 1;
+            j:= j + 1;
+        end loop;
+        Put_Line("");
+        return tr;
+    end to_traversal;
+
     binary_tree: tree;
 begin
 
@@ -101,6 +118,12 @@ begin
     Close(source);
 
     build_binary_tree(binary_tree, inorder_traversal);
+    inordre(binary_tree);
+    if right_tree(binary_tree, to_traversal(inorder_traversal)) then
+        Put_Line("Correcte");
+    else
+        Put_Line("Incorrecte");
+    end if;
     
 exception
     when End_Error =>

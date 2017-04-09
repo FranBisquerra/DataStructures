@@ -12,8 +12,8 @@ package d_binarytree is
    subtype Length_Range is Natural range 0 .. Max_Length;
 
    type tree is limited private;
-
-   type traversal is limited private;
+   type idx is new Integer range 0..Max_Length;
+   type traversal is array (idx range 1..idx'Last) of item;
 
    bad_use: exception;
    space_overflow: exception;
@@ -26,8 +26,6 @@ package d_binarytree is
    procedure right(t: in tree; rt: out tree);
 
    procedure inordre(t: in tree);
-   procedure inordre(t: in tree; r: in out traversal);
-
    function right_tree(t: in tree; r: in traversal) return boolean;
 
 private
@@ -45,7 +43,6 @@ private
          root: pnode;
       end record;
 
-   type idx is new Integer range 0..Max_Length;
-   type traversal is array (idx range 1..idx'Last) of item;
+   index: idx:= 0;   
 
 end d_binarytree;

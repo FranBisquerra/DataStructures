@@ -79,18 +79,19 @@ package body d_binarytree is
       end if;
    end inordre;
 
-   procedure inordre_pnode(n: in pnode; r: in out traversal; index: in out idx) is
+   procedure inordre_pnode(n: in pnode; r: in out traversal) is
       p: pnode renames n;
       pl: pnode renames n.l;
       pr: pnode renames n.r;
    begin
-      index:=index+1;
       if pl/=null then
-         inordre_pnode(pl);
+         inordre_pnode(pl, r);
       end if;
+      Put(index'Img&" : " & Image(p.x));
       r(index):=p.x;
+      index:= index + 1;
       if pr/=null then
-         inordre_pnode(pr);
+         inordre_pnode(pr, r);
       end if;
    end inordre_pnode;
 
@@ -98,31 +99,33 @@ package body d_binarytree is
       p: pnode renames t.root;
       pl: pnode renames t.root.l;
       pr: pnode renames t.root.r;
-      index: idx;
    begin
-      index:=0;
       if pl/=null then
-         inordre_pnode(pl, r, index);
+         inordre_pnode(pl, r);
       end if;
+      Put(index'Img&" : " & Image(p.x));      
       r(index):=p.x;
+      index:= index + 1;
       if pr/=null then
-         inordre_pnode(pr, r, index);
+         inordre_pnode(pr, r);
       end if;
    end inordre;
 
    function right_tree(t: in tree; r: in traversal) return boolean is
       p: pnode renames t.root;
-      in_ordre: traversal;
-      index: idx;
       right: boolean;
+      i: idx:= 1;
    begin
+      index:= 1;
       inordre(t, in_ordre);
-      index:=1;
       right:= true;
-      while index < in_ordre'Last and right loop
+      Put_Line(""&in_ordre'Length'Img);
+      while index < in_ordre'Last loop
          if r(index) /= in_ordre(index) then
             right:= false;
          end if;
+         Put(Image(in_ordre(index)));
+         i:= i + 1;
       end loop;
       return right;
    end right_tree;

@@ -52,66 +52,96 @@ package body d_binarytree is
       when constraint_error => raise bad_use;
    end right;
 
-   procedure inordre_pnode(n: in pnode) is
-      p: pnode renames n;
-      pl: pnode renames n.l;
-      pr: pnode renames n.r;
-   begin
-      if pl/=null then
-         inordre_pnode(pl);
-      end if;
-      Put(Image(p.x));
-      if pr/=null then
-         inordre_pnode(pr);
-      end if;
-   end inordre_pnode;
-
    procedure inordre(t: in tree) is
       p: pnode renames t.root;
       pl: pnode renames t.root.l;
       pr: pnode renames t.root.r;
+      tl, tr: tree;
    begin
       if pl/=null then
-         inordre_pnode(pl);
+         left(t, tl);
+         inordre(tl);
       end if;
       Put(Image(p.x));
       if pr/=null then
-         inordre_pnode(pr);
+         right(t, tr);
+         inordre(tr);
       end if;
    end inordre;
 
-   procedure inordre_pnode(n: in pnode; r: in out traversal) is
-      p: pnode renames n;
-      pl: pnode renames n.l;
-      pr: pnode renames n.r;
-   begin
-      if pl/=null then
-         inordre_pnode(pl, r);
-      end if;
-      Put(index'Img&" : " & Image(p.x));
-      r(index):=p.x;
-      index:= index + 1;
-      if pr/=null then
-         inordre_pnode(pr, r);
-      end if;
-   end inordre_pnode;
-
-   procedure inordre(t: in tree; r: in out traversal) is
+   procedure do_right_tree(t: in tree; r: in traversal; b: in out boolean) is
       p: pnode renames t.root;
       pl: pnode renames t.root.l;
       pr: pnode renames t.root.r;
+      tl, tr: tree;
    begin
       if pl/=null then
-         inordre_pnode(pl, r);
+         left(t, tl);
+         do_right_tree(tl, r, b);
+         if not b then return; end if;
       end if;
-      Put(index'Img&" : " & Image(p.x));      
-      r(index):=p.x;
-      index:= index + 1;
+      Put(i'Img & ": " & Image(p.x) & "[" & r(i) & "]");
+      if r(i) /= p.x then b:= false; return; end if;
+      i:= i + 1;
       if pr/=null then
-         inordre_pnode(pr, r);
+         right(t, tr);
+         do_right_tree(tr, r, b);
+         if not b then return; end if;
       end if;
-   end inordre;
-
-
+   end do_right_tree;
+   
+   function do_right_tree(t: in tree; r: in traversal) return boolean is
+      p: pnode renames t.root;
+      pl: pnode renames t.root.l;
+      pr: pnode renames t.root.r;
+      tl, tr: tree;
+   begin
+      if pl/=null then
+         left(t, tl);
+         if not do_right_tree(tl, r) then return false; end if;
+      end if;
+      Put(i'Img & ": " & Image(p.x) & "[" & r(i) & "]");
+      if r(i) /= p.x then return false; end if;
+      i:= i + 1;
+      if pr/=null then
+         right(t, tr);
+         if not do_right_tree(tr, r) then return false; end if;
+      end if;
+      return true;
+   end do_right_tree;
+   
+   function is_right_tree(t: in tree; r: in traversal) return boolean is
+      right: boolean;
+   begin
+      i:= 1; -- set the global variable
+      return do_right_tree(t, r);
+   end is_right_tree;
+   
+   function do_bst(t: in tree; min: in item; max: in item) return boolean is
+      p: pnode renames t.root;
+      pl: pnode renames t.root.l;
+      pr: pnode renames t.root.r;
+      tl, tr: tree;
+   begin
+      if p.x < min and p.x > max then return false; end if;        
+      if pl/=null then
+         left(t, tl);
+         if not do_bst(tl, min, Pred(max)) then return false; end if;
+      end if;
+      if pr/=null then
+         right(t, tr);
+         if not do_bst(tr, Succ(min), max) then return false; end if;
+      end if;
+      return true;
+      end do_bst;
+   
+   function is_bst(t: in tree) return boolean is
+      p: pnode renames t.root;
+      bst: boolean;
+      min, max: item;
+   begin
+      min:= p.x; max:= p.x;
+      return do_bst(t, min, max);    
+   end is_bst;
    
 end d_binarytree;

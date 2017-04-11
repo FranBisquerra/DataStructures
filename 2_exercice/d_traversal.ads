@@ -23,7 +23,8 @@ package d_traversal is
     procedure add(tr: in out traversal; x: in item);
     function compare(first_tr, second_tr: in traversal; index: in idx) return boolean;
     procedure slice(tr: in traversal; sub_tr: in out traversal; begining, ending: idx);
-
+    function index_of(value: in item; tr: in traversal) return Natural;
+    
 private
 
     type tr_content is array (idx range 1..idx'Last) of item;

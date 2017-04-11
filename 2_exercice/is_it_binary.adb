@@ -1,8 +1,11 @@
 with Ada.Text_IO; use Ada.Text_IO;
-with Ada.Strings.Bounded; use Ada.Strings.Bounded;
+with Ada.Command_Line; use Ada.Command_Line;
 with d_binarytree, d_traversal;
 
 procedure is_it_binary is
+
+    -- Exceptions
+    not_a_proper_character: exception;
 
     package CT is new d_traversal(item => Character, Max => 100, Image => Character'image);
 
@@ -13,28 +16,28 @@ procedure is_it_binary is
     source: File_Type;
     inorder_traversal, preorder_traversal: CT.traversal;
     root: Natural:= 1;	
-    t: tree;
-    -- Returns the root index in traversal
-    function find_root_index(c_root: in Character; sub_inorder: in CT.traversal) return Natural is
-        i: Natural:= 1;
+    t, binary_tree : tree;
+
+    -- Delete blanks
+    procedure delete_blanks(line: in String; tr: in out CT.traversal) is
+        subtype uppercase is Character Range 'A'..'Z';
     begin
-        while i <= CT.Length(sub_inorder) loop
-            if CT.get(sub_inorder, i) = c_root then
-                return i;                
+        for char of line loop
+            if char in uppercase then
+                CT.add(tr, char);
+            elsif char /= ' ' then
+                raise not_a_proper_character;
             end if;
-            i:= i + 1;
         end loop;
-        return 0;
-    end find_root_index;
+    end delete_blanks;
 
      -- Splits the inorder String into two sub arrays based on the root position
     procedure split_inorder(c_root: in Character;  sub_inorder: in CT.traversal; sub_inorder_l, sub_inorder_r: in out CT.traversal) is
         root_idx: Natural;
     begin
-        root_idx:= find_root_index(c_root, sub_inorder);
+        root_idx:= CT.index_of(c_root, sub_inorder);
         CT.slice(sub_inorder, sub_inorder_l, 1, root_idx - 1);
         CT.slice(sub_inorder, sub_inorder_r, root_idx + 1, CT.Length(sub_inorder));
-
     end split_inorder;
 
     -- Builds the binary tree based on the inorder and preorder traversals
@@ -64,47 +67,22 @@ procedure is_it_binary is
         end if;
     end build_binary_tree;
 
-    binary_tree: tree;
-
 begin
 
-    -- Load traversals from file
---	Open(source, Mode => In_File, Name => "tree_traversals");
---    inorder_traversal:= SB.To_Bounded_String(Get_Line(source));
---    delete_blanks(inorder_traversal);
---    preorder_traversal:= SB.To_Bounded_String(Get_Line(source));
---    delete_blanks(preorder_traversal);
---    Close(source);
+    if Argument_Count > 0 then 
+        -- Load traversals from file
+        Open(source,Mode => In_File, Name => Argument(1));
+        delete_blanks(Get_Line(source), inorder_traversal);
+        delete_blanks(Get_Line(source), preorder_traversal);        
+        Close(source);
+        
+        build_binary_tree(binary_tree, inorder_traversal);
+        inordre(binary_tree);
+    else 
+        Put_Line("No file name specified, please introduce one...");
+    end if;
 
---    build_binary_tree(binary_tree, inorder_traversal);
---    inordre(binary_tree);
-    --if right_tree(binary_tree, to_traversal(inorder_traversal)) then
-    --    Put_Line("Correcte");
-    --else
-    --    Put_Line("Incorrecte");
-    --end if;
-
-    CT.add(inorder_traversal, 'A');
-    CT.add(inorder_traversal, 'B');
-    CT.add(inorder_traversal, 'C');
-    CT.add(inorder_traversal, 'D');
-    CT.add(inorder_traversal, 'E');
-    CT.add(inorder_traversal, 'F');
-    CT.add(inorder_traversal, 'G');
-    CT.add(inorder_traversal, 'H');
-    CT.add(inorder_traversal, 'I');
-
-    CT.add(preorder_traversal, 'F');
-    CT.add(preorder_traversal, 'B');
-    CT.add(preorder_traversal, 'A');
-    CT.add(preorder_traversal, 'D');
-    CT.add(preorder_traversal, 'C');
-    CT.add(preorder_traversal, 'E');
-    CT.add(preorder_traversal, 'G');
-    CT.add(preorder_traversal, 'I');
-    CT.add(preorder_traversal, 'H');
-
-    build_binary_tree(binary_tree, inorder_traversal);
-    inordre(binary_tree);
+exception
+    when not_a_proper_character => Put_Line("There is at least one character that doesn match the requirements...");
 
 end is_it_binary;

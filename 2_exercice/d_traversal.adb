@@ -23,7 +23,6 @@ package body d_traversal is
     begin
         tr.content(tr.amount):= x;
         tr.amount:= tr.amount + 1;
-        Put_Line(""&length(tr)'Img & " " & image(x));
     exception
         when Constraint_Error => raise space_overflow;
     end add;
@@ -36,13 +35,7 @@ package body d_traversal is
     procedure slice(tr: in traversal; sub_tr: in out traversal; begining, ending: idx) is
         i: idx;
     begin
-    Put_Line("");
-    Put_Line(begining'Img &" " & ending'Img);
-    Put_Line("");
-  --      sub_tr.content:= tr.content(begining..ending);
---        sub_tr.amount:= ending - begining + 1;
         if begining >= 1 and ending <= length(tr) then 
-            
             i:= begining;
             while i <= ending loop
                 add(sub_tr, get(tr, i));
@@ -50,5 +43,17 @@ package body d_traversal is
             end loop;
         end if;
     end slice;
+
+    function index_of(value: in item; tr: in traversal) return Natural is
+        i: Natural:= 1;
+    begin
+        while i <= length(tr) loop
+            if get(tr, i) = value then
+                return i;                
+            end if;
+            i:= i + 1;
+        end loop;
+        return 0;
+    end index_of; 
 
 end d_traversal;

@@ -26,7 +26,7 @@ package d_binarytree is
    procedure right(t: in tree; rt: out tree);
 
    procedure inordre(t: in tree);
-   function right_tree(t: in tree; r: in traversal) return boolean;
+  -- function right_tree(t: in tree; r: in traversal) return boolean;
 
 private
    type node;

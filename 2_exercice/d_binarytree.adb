@@ -111,23 +111,6 @@ package body d_binarytree is
       end if;
    end inordre;
 
-   function right_tree(t: in tree; r: in traversal) return boolean is
-      p: pnode renames t.root;
-      right: boolean;
-      i: idx:= 1;
-   begin
-      index:= 1;
-      inordre(t, in_ordre);
-      right:= true;
-      Put_Line(""&in_ordre'Length'Img);
-      while index < in_ordre'Last loop
-         if r(index) /= in_ordre(index) then
-            right:= false;
-         end if;
-         Put(Image(in_ordre(index)));
-         i:= i + 1;
-      end loop;
-      return right;
-   end right_tree;
+   
 
 end d_binarytree;

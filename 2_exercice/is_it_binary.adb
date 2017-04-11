@@ -9,7 +9,8 @@ procedure is_it_binary is
 
     package CT is new d_traversal(item => Character, Max => 100, Image => Character'image);
 
-    package char_tree is new d_binarytree(item => Character, traversal => CT.traversal, Image => Character'Image);
+    package char_tree is new d_binarytree(item => Character, Image => Character'Image, Succ => Character'Succ, Pred => Character'Pred, 
+                                            Trav => CT);
     use char_tree;
 
     -- Variable declarations

@@ -1,6 +1,7 @@
+with d_traversal;
+
 generic
    type item is private;
-   type traversal is limited private;
 
    with function "<"(x,y: in item) return boolean is <>;
    with function "="(x,y: in item) return boolean is <>;
@@ -8,10 +9,11 @@ generic
    with function Image(x: in item) return String;
    with function Succ(x: in item) return item is <>;
    with function Pred(x: in item) return item is <>;
+   with package Trav is new d_traversal(<>);
+
 package d_binarytree is
 
    type tree is limited private;
-   subtype idx is Natural;
 
    bad_use: exception;
    space_overflow: exception;
@@ -23,7 +25,7 @@ package d_binarytree is
    procedure left(t: in tree; lt: out tree);
    procedure right(t: in tree; rt: out tree);
    procedure inordre(t: in tree);   
-   function is_right_tree(t: in tree; r: in traversal) return boolean;
+   function is_right_tree(t: in tree; r: in Trav.traversal) return boolean;
    function is_bst(t: in tree) return boolean;
 
 private
@@ -41,5 +43,7 @@ private
       record
          root: pnode;
       end record;
+
+   i: Natural:= 0;   
 
 end d_binarytree;

@@ -1,5 +1,4 @@
 with Ada.Text_IO; use Ada.Text_IO;
-with d_traversal;
 
 package body d_binarytree is
 
@@ -69,7 +68,7 @@ package body d_binarytree is
       end if;
    end inordre;
 
-   procedure do_right_tree(t: in tree; r: in traversal; b: in out boolean) is
+   procedure do_right_tree(t: in tree; r: in Trav.traversal; b: in out boolean) is
       p: pnode renames t.root;
       pl: pnode renames t.root.l;
       pr: pnode renames t.root.r;
@@ -80,8 +79,8 @@ package body d_binarytree is
          do_right_tree(tl, r, b);
          if not b then return; end if;
       end if;
-      Put(i'Img & ": " & Image(p.x) & "[" & r(i) & "]");
-      if r(i) /= p.x then b:= false; return; end if;
+      Put(i'Img & ": " & Image(p.x) & "[" & Trav.Image(Trav.get(r, i)) & "]");
+      if Trav.Image(Trav.get(r, i)) /= Image(p.x) then b:= false; return; end if;
       i:= i + 1;
       if pr/=null then
          right(t, tr);
@@ -90,7 +89,7 @@ package body d_binarytree is
       end if;
    end do_right_tree;
    
-   function do_right_tree(t: in tree; r: in traversal) return boolean is
+   function do_right_tree(t: in tree; r: in Trav.traversal) return boolean is
       p: pnode renames t.root;
       pl: pnode renames t.root.l;
       pr: pnode renames t.root.r;
@@ -100,8 +99,8 @@ package body d_binarytree is
          left(t, tl);
          if not do_right_tree(tl, r) then return false; end if;
       end if;
-      Put(i'Img & ": " & Image(p.x) & "[" & r(i) & "]");
-      if r(i) /= p.x then return false; end if;
+      Put(i'Img & ": " & Image(p.x) & "[" & Trav.Image(Trav.get(r, i)) & "]");
+      if Trav.Image(Trav.get(r, i)) /= Image(p.x) then return false; end if;
       i:= i + 1;
       if pr/=null then
          right(t, tr);
@@ -110,7 +109,7 @@ package body d_binarytree is
       return true;
    end do_right_tree;
    
-   function is_right_tree(t: in tree; r: in traversal) return boolean is
+   function is_right_tree(t: in tree; r: in Trav.traversal) return boolean is
       right: boolean;
    begin
       i:= 1; -- set the global variable
@@ -143,5 +142,4 @@ package body d_binarytree is
       min:= p.x; max:= p.x;
       return do_bst(t, min, max);    
    end is_bst;
-   
 end d_binarytree;

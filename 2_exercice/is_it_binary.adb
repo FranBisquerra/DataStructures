@@ -4,17 +4,16 @@ with d_binarytree, d_traversal;
 
 procedure is_it_binary is
 
-    package char_tree is new d_binarytree(item => Character, Max => 100, Image => Character'Image);
-    use char_tree;
-
     package CT is new d_traversal(item => Character, Max => 100, Image => Character'image);
+
+    package char_tree is new d_binarytree(item => Character, traversal => CT.traversal, Image => Character'Image);
+    use char_tree;
 
     -- Variable declarations
     source: File_Type;
-    tr1, tr2, inorder_traversal, preorder_traversal: CT.traversal;
-    b, root: Natural:= 1;	
+    inorder_traversal, preorder_traversal: CT.traversal;
+    root: Natural:= 1;	
     t: tree;
-
     -- Returns the root index in traversal
     function find_root_index(c_root: in Character; sub_inorder: in CT.traversal) return Natural is
         i: Natural:= 1;
@@ -85,26 +84,27 @@ begin
     --    Put_Line("Incorrecte");
     --end if;
 
-    CT.add(tr1, 'A');
-    CT.add(tr1, 'B');
-    CT.add(tr1, 'C');
-    CT.add(tr1, 'D');
-    CT.add(tr1, 'E');
+    CT.add(inorder_traversal, 'A');
+    CT.add(inorder_traversal, 'B');
+    CT.add(inorder_traversal, 'C');
+    CT.add(inorder_traversal, 'D');
+    CT.add(inorder_traversal, 'E');
+    CT.add(inorder_traversal, 'F');
+    CT.add(inorder_traversal, 'G');
+    CT.add(inorder_traversal, 'H');
+    CT.add(inorder_traversal, 'I');
 
-    CT.slice(tr1, tr2, 1, 3);
+    CT.add(preorder_traversal, 'F');
+    CT.add(preorder_traversal, 'B');
+    CT.add(preorder_traversal, 'A');
+    CT.add(preorder_traversal, 'D');
+    CT.add(preorder_traversal, 'C');
+    CT.add(preorder_traversal, 'E');
+    CT.add(preorder_traversal, 'G');
+    CT.add(preorder_traversal, 'I');
+    CT.add(preorder_traversal, 'H');
 
-    while b < CT.length(tr2) loop
-        Put(CT.get(tr2, b));
-        b:= b + 1;
-    end loop;
+    build_binary_tree(binary_tree, inorder_traversal);
+    inordre(binary_tree);
 
-exception
-    when End_Error =>
-        Put_Line("Please check the tree_traversals file it must have only two lines, being the first one the inorder traversal");
-        Put_Line("and the second one the preorder traversal.");
-        Close(source);
-    when Constraint_Error =>
-        Put_Line("String too long for variable.");
-    when Storage_Error =>
-        Put_Line ("Traversals too long to store.");
 end is_it_binary;

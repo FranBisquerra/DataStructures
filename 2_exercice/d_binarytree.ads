@@ -1,6 +1,6 @@
 generic
-   Max : Positive; -- Maximun lenght of a traversal
    type item is private;
+   type traversal is limited private;
 
    with function "<"(x,y: in item) return boolean is <>;
    with function "="(x,y: in item) return boolean is <>;
@@ -8,12 +8,8 @@ generic
    with function Image(x: in item) return String;
 
 package d_binarytree is
-   Max_Length : constant Positive := Max;
-   subtype Length_Range is Natural range 0 .. Max_Length;
 
    type tree is limited private;
-   type idx is new Integer range 0..Max_Length;
-   type traversal is array (idx range 1..idx'Last) of item;
 
    bad_use: exception;
    space_overflow: exception;
@@ -29,6 +25,7 @@ package d_binarytree is
   -- function right_tree(t: in tree; r: in traversal) return boolean;
 
 private
+
    type node;
    type pnode is access node;
 
@@ -42,7 +39,5 @@ private
       record
          root: pnode;
       end record;
-
-   index: idx:= 0;   
 
 end d_binarytree;

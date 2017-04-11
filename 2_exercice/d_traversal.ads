@@ -15,6 +15,7 @@ package d_traversal is
 
     bad_use: exception;
     space_overflow: exception;
+    not_sliceable: exception;
 
     function length(tr: in traversal) return idx;
     function is_empty(tr: in traversal) return boolean;
@@ -25,12 +26,12 @@ package d_traversal is
 
 private
 
-    type tr_content is array (idx range 0..idx'Last) of item;
+    type tr_content is array (idx range 1..idx'Last) of item;
     
     type traversal is 
     record
         content: tr_content;
-        amount: idx:= 0;
+        amount: idx:= 1;
     end record;
 
 end d_traversal;

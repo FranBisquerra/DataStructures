@@ -1,4 +1,5 @@
 with Ada.Text_IO; use Ada.Text_IO;
+with d_traversal;
 
 package body d_binarytree is
 
@@ -111,6 +112,6 @@ package body d_binarytree is
       end if;
    end inordre;
 
-   
 
+   
 end d_binarytree;

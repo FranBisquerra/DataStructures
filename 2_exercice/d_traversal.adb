@@ -4,12 +4,12 @@ package body d_traversal is
 
     function length(tr: traversal) return idx is
     begin
-        return tr.amount;
+        return tr.amount - 1;
     end length;
 
     function is_empty(tr: in traversal) return boolean is
     begin
-        return length(tr) = 0;
+        return length(tr) = 1;
     end is_empty;
 
     function get(tr: in traversal; index: in idx) return item is
@@ -23,7 +23,7 @@ package body d_traversal is
     begin
         tr.content(tr.amount):= x;
         tr.amount:= tr.amount + 1;
-        Put_Line(""&tr.amount'Img & " " & image(x));
+        Put_Line(""&length(tr)'Img & " " & image(x));
     exception
         when Constraint_Error => raise space_overflow;
     end add;
@@ -37,9 +37,14 @@ package body d_traversal is
         i: idx;
     begin
     Put_Line("");
-        if begining >= 0 and ending < length(tr) then 
+    Put_Line(begining'Img &" " & ending'Img);
+    Put_Line("");
+  --      sub_tr.content:= tr.content(begining..ending);
+--        sub_tr.amount:= ending - begining + 1;
+        if begining >= 1 and ending <= length(tr) then 
+            
             i:= begining;
-            while i < length(tr) loop
+            while i <= ending loop
                 add(sub_tr, get(tr, i));
                 i:= i + 1;
             end loop;

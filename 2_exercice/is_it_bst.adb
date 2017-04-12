@@ -15,7 +15,7 @@ procedure is_it_binary is
     use char_tree;
 
     -- Variable declarations
-    source: File_Type;
+    source, output: File_Type;
     inorder_traversal, preorder_traversal: CT.traversal;
     root: Natural:= 1;	
     t, binary_tree : tree;
@@ -74,7 +74,7 @@ begin
 
     if Argument_Count > 0 then 
         -- Load traversals from file
-        Open(source,Mode => In_File, Name => Argument(1));
+        Open(File => source,Mode => In_File, Name => Argument(1));
         delete_blanks(Get_Line(source), inorder_traversal);
         delete_blanks(Get_Line(source), preorder_traversal);        
         Close(source);
@@ -84,24 +84,35 @@ begin
         inordre(binary_tree);
         Put_Line("");
 
+        Open(File => output, Mode => Out_File, Name => "resultats.txt");
         if is_right_tree(binary_tree, inorder_traversal) then 
-            Put_Line("");
+            Put(output, '1');
             Put_Line("is OK");        
         else
+            Put(output, '0');        
             Put_Line("is not OK");        
         end if;
-        
+            Set_Line(output, 2);
         if is_bst(binary_tree) then 
+            Put(output, '1');
             Put_Line("is BST");        
         else
+            Put(output, '0');        
             Put_Line("is not BST");        
         end if;
+
+        Close(output);
     else 
         Put_Line("No file name specified, please introduce one...");
     end if;
 
 exception
     when not_a_proper_character => Put_Line("There is at least one character that doesn match the requirements...");
-    when not_proper_inorder_traveral => Put_Line("The inorder traversal is not correct, please check and try again");
-
+    when not_proper_inorder_traveral => 
+        Put_Line("Something is wrong with the traversals, it is not possible to build the tree. Please check and try again");
+        Open(File => output, Mode => Out_File, Name => "resultats.txt");
+            Put(output, '0');
+            Set_Line(output, 2);
+            Put(output, '0');        
+            Close(output);
 end is_it_binary;

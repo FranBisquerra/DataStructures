@@ -122,6 +122,7 @@ package body d_binarytree is
       pr: pnode renames t.root.r;
       tl, tr: tree;
    begin
+        Put_Line("min: "&Image(min)&" - max: "&Image(max)& " - node: "&Image(p.x));
       if p.x < min and p.x > max then return false; end if;        
       if pl/=null then
          left(t, tl);

@@ -78,7 +78,6 @@ package body d_binarytree is
          left(t, tl);
          if not do_right_tree(tl, r) then return false; end if;
       end if;
-      Put(i'Img & ": " & Image(p.x) & "[" & Trav.Image(Trav.get(r, i)) & "]");
       if Trav.Image(Trav.get(r, i)) /= Image(p.x) then return false; end if;
       i:= i + 1;
       if pr/=null then
@@ -100,7 +99,6 @@ package body d_binarytree is
       pr: pnode renames t.root.r;
       tl, tr: tree;
    begin
-        Put_Line("min: "&Image(min)&" - max: "&Image(max)& " - node: "&Image(p.x));
       if p.x < min or p.x > max then return false; end if;        
       if pl/=null then
          left(t, tl);
@@ -120,43 +118,5 @@ package body d_binarytree is
       min:= item'First; max:= item'Last;
       return do_bst(t, min, max);    
    end is_bst;
-
-
-   function preorder(t: in tree; sum: in  item; x: in item) return boolean is
-      p: pnode renames t.root;
-      pl: pnode renames t.root.l;
-      pr: pnode renames t.root.r;
-      ok : boolean := False;
-      s : item;
-      lt, rt: tree;
-   begin
-   
-    if pl = null and pr = null then
-      s := sum + p.x;
-      return s = x;
-    else   
-      s := sum + p.x;
-      put_line(Image(s));
-
-      if pl /= null then   
-          left(t, lt); 
-          ok := preorder(lt, s, x);
-        if pr/= null and ok = False then
-          right(t, rt);
-          ok := preorder(rt, s, x);
-        end if;
-      end if;
-    return ok;
-    end if;
-
-   end preorder;
-
-   -- Calls is path sum
-   function is_path_sum(t: in tree; x: in item) return boolean is
-
-   begin
-   Put(Image(item'First));
-      return preorder(t, item'First, x);
-   end is_path_sum;
 
 end d_binarytree;

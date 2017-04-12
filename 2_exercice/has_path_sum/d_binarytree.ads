@@ -10,6 +10,7 @@ generic
    with function Image(x: in item) return String;
    with function Succ(x: in item) return item is <>;
    with function Pred(x: in item) return item is <>;
+   
    with package Trav is new d_traversal(<>);
 
 package d_binarytree is

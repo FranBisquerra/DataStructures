@@ -9,9 +9,10 @@ procedure has_path_sum is
     not_a_proper_number: exception;
     not_proper_inorder_traveral: exception;
 
+    subtype integer_range is Integer Range 0..Integer'Last;
     package IT is new d_traversal(item => Integer, Max => 100, Image => Integer'Image);
     
-    package integer_tree is new d_binarytree(item => Integer, Image => Integer'Image, 
+    package integer_tree is new d_binarytree(item => integer_range, Image => Integer'Image, 
                                             Succ => Integer'Succ, Pred => Integer'Pred, Trav => IT);
     use integer_tree;
 
@@ -19,7 +20,7 @@ procedure has_path_sum is
     source, output: File_Type;
     inorder_traversal, preorder_traversal: IT.traversal;
     root: Natural:= 1;	
-    t, binary_tree : tree;
+    binary_tree : tree;
     read_item: Integer;    
 
      -- Splits the inorder String into two sub arrays based on the root position
@@ -40,26 +41,21 @@ procedure has_path_sum is
         i_root: Integer;
     begin
         i_root:= IT.get(preorder_traversal, root);
-        if IT.length(sub_inorder) > 1 then 
-            split_inorder(i_root, sub_inorder, sub_inorder_l, sub_inorder_r);
-            if IT.length(sub_inorder_l) >= 1 then
-                root:= root + 1;
-                build_binary_tree(lt, sub_inorder_l);
-            end if;
-            if IT.length(sub_inorder_r) >= 1 then
-                root:= root + 1;
-                build_binary_tree(rt, sub_inorder_r);
-            end if;
-            Put("tree: "&i_root'Img &" -> ");
-            graft(r, lt, rt, i_root);
-        -- is leaf
-        elsif IT.length(sub_inorder) = 1 then 
-            Put("leaf: "&i_root'Img &" -> ");        
-            graft(r, lt, rt, i_root);
+        root:= root + 1;
+
+        split_inorder(i_root, sub_inorder, sub_inorder_l, sub_inorder_r);
+
+        if IT.length(sub_inorder_l) >= 1 then
+            build_binary_tree(lt, sub_inorder_l);
         end if;
+        if IT.length(sub_inorder_r) >= 1 then
+            build_binary_tree(rt, sub_inorder_r);
+        end if;
+
+        Put("tree: "&i_root'Img &" -> ");
+        graft(r, lt, rt, i_root);
     end build_binary_tree;
 
-    count: Integer;
 begin
 
     if Argument_Count > 0 then 
@@ -78,9 +74,9 @@ begin
         Close(source);
         
         build_binary_tree(binary_tree, inorder_traversal);
-        Put_Line("");
         inordre(binary_tree);
-        Put_Line("");
+
+        put(is_path_sum(binary_tree, 12)'Img);
 
         Open(File => output, Mode => Out_File, Name => "resultats.txt");
         Close(output);

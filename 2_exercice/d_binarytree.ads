@@ -1,11 +1,12 @@
 with d_traversal;
 
 generic
-   type item is private;
+   type item is (<>);
 
    with function "<"(x,y: in item) return boolean is <>;
    with function "="(x,y: in item) return boolean is <>;
    with function ">"(x,y: in item) return boolean is <>;
+   with function "+"(x,y: in item) return item is <>;
    with function Image(x: in item) return String;
    with function Succ(x: in item) return item is <>;
    with function Pred(x: in item) return item is <>;
@@ -27,6 +28,7 @@ package d_binarytree is
    procedure inordre(t: in tree);   
    function is_right_tree(t: in tree; r: in Trav.traversal) return boolean;
    function is_bst(t: in tree) return boolean;
+   function is_path_sum(t: in tree; x: in item) return boolean;
 
 private
 

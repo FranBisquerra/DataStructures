@@ -2,15 +2,16 @@ with Ada.Text_IO; use Ada.Text_IO;
 with Ada.Command_Line; use Ada.Command_Line;
 with d_binarytree, d_traversal;
 
-procedure is_it_binary is
+procedure is_it_bst is
 
     -- Exceptions
     not_a_proper_character: exception;
     not_proper_inorder_traveral: exception;
 
+    subtype char_range is Character Range 'A'..'Z';
     package CT is new d_traversal(item => Character, Max => 100, Image => Character'image);
     
-    package char_tree is new d_binarytree(item => Character, Image => Character'Image, 
+    package char_tree is new d_binarytree(item => char_range, Image => Character'Image, 
                                             Succ => Character'Succ, Pred => Character'Pred, Trav => CT);
     use char_tree;
 
@@ -18,7 +19,7 @@ procedure is_it_binary is
     source, output: File_Type;
     inorder_traversal, preorder_traversal: CT.traversal;
     root: Natural:= 1;	
-    t, binary_tree : tree;
+    binary_tree : tree;
 
     -- Delete blanks
     procedure delete_blanks(line: in String; tr: in out CT.traversal) is
@@ -51,23 +52,19 @@ procedure is_it_binary is
         c_root: Character;
     begin
         c_root:= CT.get(preorder_traversal, root);
-        if CT.length(sub_inorder) > 1 then 
-            split_inorder(c_root, sub_inorder, sub_inorder_l, sub_inorder_r);
-            if CT.length(sub_inorder_l) >= 1 then
-                root:= root + 1;
-                build_binary_tree(lt, sub_inorder_l);
-            end if;
-            if CT.length(sub_inorder_r) >= 1 then
-                root:= root + 1;
-                build_binary_tree(rt, sub_inorder_r);
-            end if;
-            Put("tree: "&c_root &" -> ");
-            graft(r, lt, rt, c_root);
-        -- is leaf
-        elsif CT.length(sub_inorder) = 1 then 
-            Put("leaf: "&c_root &" -> ");        
-            graft(r, lt, rt, c_root);
+        root:= root + 1;
+
+        split_inorder(c_root, sub_inorder, sub_inorder_l, sub_inorder_r);
+
+        if CT.length(sub_inorder_l) >= 1 then
+            build_binary_tree(lt, sub_inorder_l);
         end if;
+        if CT.length(sub_inorder_r) >= 1 then
+            build_binary_tree(rt, sub_inorder_r);
+        end if;
+
+        Put("tree: "&c_root &" -> ");
+        graft(r, lt, rt, c_root);
     end build_binary_tree;
 
 begin
@@ -115,4 +112,4 @@ exception
             Set_Line(output, 2);
             Put(output, '0');        
             Close(output);
-end is_it_binary;
+end is_it_bst;

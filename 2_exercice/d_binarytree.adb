@@ -67,27 +67,6 @@ package body d_binarytree is
          inordre(tr);
       end if;
    end inordre;
-
-   procedure do_right_tree(t: in tree; r: in Trav.traversal; b: in out boolean) is
-      p: pnode renames t.root;
-      pl: pnode renames t.root.l;
-      pr: pnode renames t.root.r;
-      tl, tr: tree;
-   begin
-      if pl/=null then
-         left(t, tl);
-         do_right_tree(tl, r, b);
-         if not b then return; end if;
-      end if;
-      Put(i'Img & ": " & Image(p.x) & "[" & Trav.Image(Trav.get(r, i)) & "]");
-      if Trav.Image(Trav.get(r, i)) /= Image(p.x) then b:= false; return; end if;
-      i:= i + 1;
-      if pr/=null then
-         right(t, tr);
-         do_right_tree(tr, r, b);
-         if not b then return; end if;
-      end if;
-   end do_right_tree;
    
    function do_right_tree(t: in tree; r: in Trav.traversal) return boolean is
       p: pnode renames t.root;
@@ -110,7 +89,6 @@ package body d_binarytree is
    end do_right_tree;
    
    function is_right_tree(t: in tree; r: in Trav.traversal) return boolean is
-      right: boolean;
    begin
       i:= 1; -- set the global variable
       return do_right_tree(t, r);
@@ -123,7 +101,7 @@ package body d_binarytree is
       tl, tr: tree;
    begin
         Put_Line("min: "&Image(min)&" - max: "&Image(max)& " - node: "&Image(p.x));
-      if p.x < min and p.x > max then return false; end if;        
+      if p.x < min or p.x > max then return false; end if;        
       if pl/=null then
          left(t, tl);
          if not do_bst(tl, min, Pred(max)) then return false; end if;
@@ -137,10 +115,48 @@ package body d_binarytree is
    
    function is_bst(t: in tree) return boolean is
       p: pnode renames t.root;
-      bst: boolean;
       min, max: item;
    begin
-      min:= p.x; max:= p.x;
+      min:= item'First; max:= item'Last;
       return do_bst(t, min, max);    
    end is_bst;
+
+
+   function preorder(t: in tree; sum: in  item; x: in item) return boolean is
+      p: pnode renames t.root;
+      pl: pnode renames t.root.l;
+      pr: pnode renames t.root.r;
+      ok : boolean := False;
+      s : item;
+      lt, rt: tree;
+   begin
+   
+    if pl = null and pr = null then
+      s := sum + p.x;
+      return s = x;
+    else   
+      s := sum + p.x;
+      put_line(Image(s));
+
+      if pl /= null then   
+          left(t, lt); 
+          ok := preorder(lt, s, x);
+        if pr/= null and ok = False then
+          right(t, rt);
+          ok := preorder(rt, s, x);
+        end if;
+      end if;
+    return ok;
+    end if;
+
+   end preorder;
+
+   -- Calls is path sum
+   function is_path_sum(t: in tree; x: in item) return boolean is
+
+   begin
+   Put(Image(item'First));
+      return preorder(t, item'First, x);
+   end is_path_sum;
+
 end d_binarytree;

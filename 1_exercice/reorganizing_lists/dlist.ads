@@ -2,8 +2,8 @@ generic
 	type item is private;
 	
 	with function "<" (x,y: in item) return boolean is <>;
-  	with function "=" (x,y: in item) return boolean is <>;
-  	with function ">" (x,y: in item) return boolean is <>;
+	with function "=" (x,y: in item) return boolean is <>;
+	with function ">" (x,y: in item) return boolean is <>;
 
 package dlist is
 

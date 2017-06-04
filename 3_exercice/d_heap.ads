@@ -6,8 +6,7 @@ generic
 package d_heap is
   type heap is limited private;
 
-  space_overflow: exception;
-  bad_use: exception;
+  bad_use, space_overflow: exception;
 
   procedure empty (h: out heap);
   procedure put (h: in out heap; x: in item);

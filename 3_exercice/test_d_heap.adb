@@ -24,46 +24,33 @@ begin
 
   HP.empty(test_heap);
 
-  -- Insert items into heap
   HP.put(test_heap, 100);
   HP.put(test_heap, 200);
   HP.put(test_heap, 50);
   HP.put(test_heap, 1000);
   HP.put(test_heap, 1);
 
-  -- Get from heap
+  -- Asserts
   n:= HP.get_least(test_heap);
-  if n /= 1 then
-    Assert(false, "Error in first get");
-  end if;
+  Assert(n=1, "Error in first get");
   HP.delete_least(test_heap);
 
   n:= HP.get_least(test_heap);
-  if n /= 50 then
-    Assert(false, "Error in second get");
-  end if;
+  Assert(n=50, "Error in second get");
   HP.delete_least(test_heap);
 
   n:= HP.get_least(test_heap);
-  if n /= 100 then
-    Assert(false, "Error in third get");
-  end if;
+  Assert(n = 100, "Error in third get");
   HP.delete_least(test_heap);
 
   n:= HP.get_least(test_heap);
-  if n /= 200 then
-    Assert(false, "Error in fourth get");
-  end if;
+  Assert(n = 200, "Error in fourth get");
   HP.delete_least(test_heap);
 
   n:= HP.get_least(test_heap);
-  if n /= 1000 then
-    Assert(false, "Error in fifth get");
-  end if;
+  Assert(n = 1000, "Error in fifth get");
   HP.delete_least(test_heap);
 
-  if HP.is_empty(test_heap) = false then
-    Assert(false, "Heap not empty, and it should");
-  end if;
+  Assert(HP.is_empty(test_heap), "Heap not empty, and it should");
 
 end test_d_heap;

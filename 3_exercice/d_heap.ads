@@ -3,6 +3,8 @@ generic
   type item is private;
   with function "<" (x1, x2: in item) return boolean;
   with function ">" (x1, x2: in item) return boolean;
+  with function printer(x: in item) return String;
+
 package d_heap is
   type heap is limited private;
 

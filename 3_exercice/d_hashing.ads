@@ -1,3 +1,5 @@
+with Ada.Containers;
+
 generic
 
   type key is private;

@@ -1,3 +1,6 @@
+with Ada.Text_IO; use Ada.Text_IO;
+with Ada.Integer_Text_IO; use Ada.Integer_Text_IO;
+
 package body  d_heap is
 
   procedure empty (h: out heap) is
@@ -14,8 +17,8 @@ package body  d_heap is
   begin 
     if n = size then raise space_overflow; end if;
     n:= n + 1; i:= n; pi:= n / 2;
-    while pi > 0 and then a(pi)> x loop
-      a(i):= a(pi); i:= pi; pi:= n / 2;
+    while pi > 0 and then a(pi) > x loop
+      a(i):= a(pi); i:= pi; pi:= i / 2;
     end loop;
     a(i):= x;
   end put;
@@ -35,6 +38,7 @@ package body  d_heap is
       a(i):= a(ci); i:= ci; ci:= i*2;
       if ci < n and then a(ci + 1) < a(ci) then ci:= ci+1; end if;
     end loop;
+    a(i):= x;
   end delete_least;
 
   function is_empty (h: in heap) return boolean is

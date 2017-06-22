@@ -4,6 +4,8 @@ with Ada.Command_Line; use Ada.Command_Line;
 with Ada.Directories; use Ada.Directories;
 with Ada.Numerics.Discrete_Random;
 with Ada.Strings.Unbounded;
+
+with d_heap; use heap;
 --with Ada.Containers;
 
 --with d_heap, d_mapping, d_hashing, d_binarytree, d_stack;
@@ -21,7 +23,7 @@ procedure veterinary is
   --package HS renames Ada.Containers;
 
   -- Random number variables
-  G: RN.Generator;
+  Generator: RN.Generator;
   prob: probability;
 
   -- Hashing tests
@@ -29,26 +31,56 @@ procedure veterinary is
   --pet_hash: natural;
 
   -- Items definitions
+  type history is
+    record
+      reason: visit_reason;
+      start_cycle: Integer; 
+  end record;
+
+  type queue is
+    record
+      pet_name: SU.Unbounded_String;
+      waitting_cycles: Natural;
+      reason: visit_reason;
+  end record;
+
   type box is 
     record
       is_opened: boolean:= false;
       is_free: boolean:= true;
       pet_name: SU.Unbounded_String;
-      pet_left_cicles: natural;
-      pet_reason: visit_reason;
+      left_cicles: natural;
+      reason: visit_reason;
+    end record;
+
+  type visit is
+    record
+      amount: Natural;
   end record;
 
-  type support_list_item is
-    record
-      pet_name: SU.Unbounded_String;
-      visits_amount: positive;
-  end support_list_item;
+  -- Structures definitions
+  histories:;  
+  waitting_room: heap;
+  boxes:;
+  visits_history:;
+
+  -- Environment initalization 
+  probability_new_box: constant:= 10;
+  probability_delete_box: constant:= 10; 
+
+  box_number: Integer:= 1;
+  cycle: Integer:= 0;
 
 begin
   RN.Reset(G);
   Put_Line("Main program");
-  
-  -- inicialitzar consultes.
+
+  -- Initialize boxes
+  -- Read pet
+
+  -- There are free boxes?
+
+
 
 
 

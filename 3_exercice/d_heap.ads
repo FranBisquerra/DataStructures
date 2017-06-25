@@ -6,7 +6,7 @@ generic
   with function printer(x: in item) return String;
 
 package d_heap is
-  type heap is limited private;
+  type heap is private;
 
   bad_use, space_overflow: exception;
 

@@ -2,10 +2,10 @@ with d_heap, d_mapping, d_hashing, d_binarytree;
 with Ada.Containers, Ada.Strings.Unbounded, Ada.Strings.Hash; use Ada.Strings;
 with Ada.Text_IO; use Ada.Text_IO;
 with Ada.Integer_Text_IO; use Ada.Integer_Text_IO;
+with Ada.Numerics.Discrete_Random;
 
 generic
   waiting_room_size: Natural;
-  box_amount: Positive;
   historic_amount: Positive;
 
 package d_clinic is
@@ -19,11 +19,9 @@ package d_clinic is
   -- package types declarations
   package SU renames Ada.Strings.Unbounded;
 
-  -- package procedures and functions
-  -- procedure init_clinic(c: in clinic);
-
-  procedure put(name: in SU.Unbounded_String; reason: in visit_reason; cycle_in: in cycle; c: in out clinic);
-  --procedure advance_cycle(c:in clinic);
+  procedure init_clinic(c: in out clinic);
+  procedure put(name: in SU.Unbounded_String; reason: in visit_reason; current_cycle: in cycle; c: in out clinic);
+  procedure advance_cycle(c: in out clinic; current_cycle: in cycle);
 
   --function retrieve_wait_room_pets(c: in clinic) return SU.Unbounded_String;
   --function retrieve_pet_historic(name: in SU.Unbounded_String) return SU.Unbounded_String;
@@ -31,6 +29,12 @@ package d_clinic is
 
 private
 
+  -- Random numbers definitions
+  subtype probability_range is Integer range 1 .. 100;
+  subtype probability is Integer range probability_range'First .. probability_range'Last;
+  package RN is new Ada.Numerics.Discrete_Random (probability_range);
+  Generator: RN.Generator;
+  
   -- Box definitions
   type box_item is 
     record
@@ -60,23 +64,25 @@ private
       start_cycle: cycle; 
   end record;
 
-  -- Waiting room data structure
-  package WR is new d_heap(waiting_room_size, waiting_room_item, wr_smaller, wr_bigger, wr_image);
+  -- Waiting room data structure (Inverted comparator to force heap of maximums)
+  package WR is new d_heap(waiting_room_size, waiting_room_item, wr_bigger, wr_smaller, wr_image);
   -- History room data structure
   package H is new d_hashing(historic_item, historic_amount);
   -- Boxes data structure
   package BOX is new d_mapping(Natural, box_item, "<");
   -- Helpers sets data structure
   package HS is new d_binarytree(SU.Unbounded_String, Natural, SU."<", SU.">");
-  package HSL is new d_mapping(Natural, HS.tree, "<");
+  type hs_array is array (visit_reason) of HS.tree;
+
+  subtype opened_boxes_amount is Natural range 1..5;
 
   type clinic is
     record
     waiting_room: WR.heap;
     boxes: BOX.set;
+    opened_boxes: opened_boxes_amount:= 1;
     historic: H.set;
-    helper_sets: HSL.set;
-    current_cycle: cycle:= 0;
+    helper_sets: hs_array;
   end record;
 
 end d_clinic;

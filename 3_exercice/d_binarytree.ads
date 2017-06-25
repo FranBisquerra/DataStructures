@@ -9,7 +9,7 @@ generic
 
 package d_binarytree is
 
-  type tree is limited private;
+  type tree is private;
 
   bad_use, space_overflow, already_exists,does_not_exist: exception;
 

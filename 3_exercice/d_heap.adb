@@ -1,7 +1,7 @@
 with Ada.Text_IO; use Ada.Text_IO;
 with Ada.Integer_Text_IO; use Ada.Integer_Text_IO;
 
-package body  d_heap is
+package body d_heap is
 
   procedure empty (h: out heap) is
     n: natural renames h.n;

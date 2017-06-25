@@ -1,11 +1,8 @@
-with Ada.Containers;
+with Ada.Containers, Ada.Strings.Unbounded; use Ada.Containers, Ada.Strings.Unbounded; 
 
 generic
 
-  type key is private;
   type item is private;
-  with function "<" (k1, k2: in key) return boolean;
-  with function hash (k: in key; b: in positive) return natural;
   size: positive; -- prime number
 
 package d_hashing is
@@ -15,25 +12,28 @@ package d_hashing is
   bad_use, space_overflow, already_exists,does_not_exist: exception;
 
   procedure empty (s: out set);
-  procedure put (s: in out set; k: in key; x: in item);
+  procedure put (s: in out set; k: in Unbounded_String; x: in item);
+  procedure get(s: in set; k: in Unbounded_String; x: out item);
 
 private
 
-  dt_size: constant natural:= size;
-  max_item_number: constant natural:= size*8/10;
+  dt_size: constant Ada.Containers.Hash_Type:= Ada.Containers.Hash_Type(size);
+  max_item_number: constant Ada.Containers.Hash_Type:= dt_size*8/10;
+  subtype hash_index is Ada.Containers.Hash_Type range 0..dt_size-1;
+
   type cell_state is (free, occupied);
 
   type cell is record
-    k: key;
+    k: Unbounded_String;
     x: item;
     state: cell_state;
   end record;
 
-  type dispersion_table is array(natural range 0..dt_size-1) of cell;
+  type dispersion_table is array(hash_index) of cell;
 
   type set is record
     dt: dispersion_table;
-    item_number: natural; -- number of stored items
+    item_number: Ada.Containers.Hash_Type; -- number of stored items
   end record;
 
 end d_hashing;

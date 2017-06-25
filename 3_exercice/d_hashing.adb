@@ -1,8 +1,10 @@
+with Ada.Strings.Unbounded.Hash; use Ada.Strings.Unbounded; 
+
 package body d_hashing is
 
   procedure empty(s: out set) is
     dt: dispersion_table renames s.dt;
-    item_number: natural renames s.item_number;
+    item_number: Ada.Containers.Hash_Type renames s.item_number;
   begin
     for i in 0..dt_size-1 loop
       dt(i).state:= free;
@@ -10,14 +12,13 @@ package body d_hashing is
     item_number:= 0;
   end empty;
 
-  procedure put(s: in out set; k: in key; x: in item) is
+  procedure put(s: in out set; k: in Unbounded_String; x: in item) is
     dt: dispersion_table renames s.dt;
-    item_number: natural renames s.item_number;
-    initial_position, current_position: natural; 
-    attemps_amount: natural;
+    item_number: Ada.Containers.Hash_Type renames s.item_number;
+    attemps_amount, initial_position, current_position: Ada.Containers.Hash_Type; 
   begin
   
-    initial_position:= hash(k, max_item_number); 
+    initial_position:= Hash(k); 
     current_position:= initial_position;
     attemps_amount:= 0;
 
@@ -35,12 +36,11 @@ package body d_hashing is
     item_number:= item_number+1;
   end put;
 
-  procedure get(s: in set; k: in key; x: out item) is
+  procedure get(s: in set; k: in Unbounded_String; x: out item) is
     dt: dispersion_table renames s.dt;
-    initial_position, current_position: natural;
-    attemps_amount: natural;
+    attemps_amount, initial_position, current_position: Ada.Containers.Hash_Type;
   begin
-    initial_position:= hash(k, max_item_number);
+    initial_position:= Hash(k);
     current_position:= initial_position; 
     attemps_amount:= 0;
 

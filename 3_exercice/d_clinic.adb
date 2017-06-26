@@ -29,6 +29,19 @@ package body d_clinic is
     end case; 
     return initial_cycle_amount;
   end calculate_wait_cycles;
+
+  function calculate_box_cycles(reason: in visit_reason) return cycle is
+    initial_cycle_amount: cycle;
+  begin
+    case reason is
+      when visit_reason'(CHECK) => initial_cycle_amount:= 3;
+      when visit_reason'(CURE) => initial_cycle_amount:= 5;
+      when visit_reason'(SURGERY) => initial_cycle_amount:= 8;
+      when visit_reason'(EMERGENCY) => initial_cycle_amount:= 4;
+    end case; 
+    return initial_cycle_amount;
+  end calculate_box_cycles;
+
   -- End helper functions
 
   procedure init_clinic(c: in out clinic) is
@@ -149,6 +162,58 @@ package body d_clinic is
     end loop;  
   end open_available_box;
 
+  procedure enter_box(c: in out clinic; wr_item: in waiting_room_item) is
+    box_to_enter: box_item;
+    it: BOX.iterator;
+    box_to_enter_key: Natural;
+    entered: Boolean:= false;
+  begin 
+
+    Put_Line("");
+    Put_Line("/++++++++++++++++++++++++++++++++++++++++++++++++/");
+    Put_Line("About to enter box: " &
+              "name: " & SU.To_String(wr_item.name) & 
+              ", cycle: " & wr_item.waiting_cycles'Img &
+              ", reason: " & wr_item.reason'Img);
+    Put_Line("/++++++++++++++++++++++++++++++++++++++++++++++++/");
+    Put_Line("");
+    
+    BOX.first(c.boxes, it);
+    while BOX.is_valid(it) and then entered = false loop
+      BOX.get(c.boxes, it, box_to_enter_key, box_to_enter);
+
+      if box_to_enter.is_opened and then box_to_enter.is_free then
+        box_to_enter.name:= wr_item.name;
+        box_to_enter.reason:= wr_item.reason;
+        box_to_enter.left_cicles:= calculate_box_cycles(box_to_enter.reason);
+        box_to_enter.is_free:= false;
+        entered:= true;
+        BOX.update(c.boxes, box_to_enter_key, box_to_enter);
+      end if;
+
+      BOX.next(c.boxes, it);
+    end loop;  
+  end enter_box;
+
+  function are_free_boxes(c: in clinic) return Boolean is
+    free_box: box_item;
+    it: BOX.iterator;
+    free_box_key: Natural;
+    found: Boolean:= false;
+  begin 
+    BOX.first(c.boxes, it);
+    while BOX.is_valid(it) and then found = false loop
+      BOX.get(c.boxes, it, free_box_key, free_box);
+
+      if free_box.is_opened and then free_box.is_free then
+        found:= true;
+      end if;
+
+      BOX.next(c.boxes, it);
+    end loop; 
+    return found;
+  end are_free_boxes;
+
   procedure manage_boxes(c: in out clinic; current_cycle: in cycle) is
     box_to_update: box_item;
     it: BOX.iterator;
@@ -207,10 +272,20 @@ package body d_clinic is
   end put;
 
   procedure advance_cycle(c: in out clinic; current_cycle: in cycle) is
+    pet_from_wr: waiting_room_item;
   begin 
 
     manage_waiting_room(c.waiting_room, current_cycle);    
     manage_boxes(c, current_cycle);
+    
+    if are_free_boxes(c) then 
+      pet_from_wr:= WR.get_least(c.waiting_room);
+      WR.delete_least(c.waiting_room);
+
+      enter_box(c, pet_from_wr);
+    end if;
+
+    -- if automatic do printing
 
   end advance_cycle;
 

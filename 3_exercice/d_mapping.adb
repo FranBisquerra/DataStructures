@@ -12,11 +12,11 @@ package body  d_mapping is
     pp, p, q: pnode;
   begin
     pp:= null; p:= first;
-    if p/=null and then p.k=k then raise already_exists; end if ;
+    while p/=null and then p.k < k loop pp:= p; p:= p.next; end loop;
+    if p/=null and then p.k=k then raise already_exists; end if;
     
     q:= new node; q.all:= (k, x, p);
-    if pp=null then first:= q; -- empty list
-    else pp.next:= q; end if ; -- not empty list
+    if pp=null then first:= q; else pp.next:= q; end if;
 
     exception
       when storage_error => raise space_overflow;
@@ -28,7 +28,7 @@ package body  d_mapping is
   begin
     p:= first;
 
-    while p/=null and then p.k<k loop p:= p.next; end loop;
+    while p/=null and then p.k < k loop p:= p.next; end loop;
     if p=null or else p.k/=k then raise does_not_exist; end if ;
 
     p.x:= x;
@@ -41,7 +41,7 @@ package body  d_mapping is
     pp:= null; p:= first;
 
     -- look for it
-    while p/=null and then p.k<k loop pp:= p; p:= p.next; end loop;
+    while p/=null and then p.k < k loop pp:= p; p:= p.next; end loop;
     if p=null or else p.k/=k then raise does_not_exist; end if ;
 
     if pp=null then first:= p.next; -- remove the only item

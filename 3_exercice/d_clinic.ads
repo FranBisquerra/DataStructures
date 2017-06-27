@@ -11,15 +11,16 @@ generic
 package d_clinic is
   type clinic is limited private;
 
-  type visit_reason is (CHECK, CURE, SURGERY, EMERGENCY);
+  type visit_reason is (CHECK, CURE, SURGERY, EMERGENCY, NONE);
   subtype cycle is Natural;
 
   -- clinic exceptions: exception;
-
+  NO_MORE_ANIMALS: exception;
+  NO_VISIT_REASON: exception;
   -- package types declarations
   package SU renames Ada.Strings.Unbounded;
 
-  procedure init_clinic(c: in out clinic);
+  procedure init_clinic(c: in out clinic; random_seed: in Integer);
   procedure put(name: in SU.Unbounded_String; reason: in visit_reason; current_cycle: in cycle; c: in out clinic);
   procedure advance_cycle(c: in out clinic; current_cycle: in cycle);
 
@@ -41,8 +42,8 @@ private
       is_opened: boolean:= false;
       is_free: boolean:= true;
       name: SU.Unbounded_String;
-      left_cicles: cycle;
-      reason: visit_reason;
+      left_cycles: cycle:= cycle'Last;
+      reason: visit_reason:= NONE;
     end record;
   
   -- Waiting room definitions
@@ -50,7 +51,7 @@ private
     record
       name: SU.Unbounded_String;
       waiting_cycles: cycle;
-      reason: visit_reason;
+      reason: visit_reason:= NONE;
   end record;
 
   function wr_bigger (x, y: in waiting_room_item) return Boolean;
@@ -64,17 +65,20 @@ private
       start_cycle: cycle; 
   end record;
 
+  subtype historic_list_size is Natural range 1..100;
+
+  subtype opened_boxes_amount is Natural range 1..5;
+
   -- Waiting room data structure (Inverted comparator to force heap of maximums)
   package WR is new d_heap(waiting_room_size, waiting_room_item, wr_bigger, wr_smaller, wr_image);
   -- History room data structure
-  package H is new d_hashing(historic_item, historic_amount);
+  package HL is new d_mapping(historic_list_size, historic_item, "<");
+  package H is new d_hashing(HL.set, historic_amount);
   -- Boxes data structure
-  package BOX is new d_mapping(Natural, box_item, "<");
+  package BOX is new d_mapping(opened_boxes_amount, box_item, "<");
   -- Helpers sets data structure
   package HS is new d_binarytree(SU.Unbounded_String, Natural, SU."<", SU.">");
   type hs_array is array (visit_reason) of HS.tree;
-
-  subtype opened_boxes_amount is Natural range 1..5;
 
   type clinic is
     record

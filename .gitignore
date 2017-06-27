@@ -6,3 +6,6 @@
 
 # Executable programs
 *.exec
+
+# Results
+*.results

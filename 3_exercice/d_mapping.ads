@@ -6,7 +6,7 @@ generic
 
 package d_mapping is
 
-  type set is limited private;
+  type set is private;
 
   already_exists: exception;
   does_not_exist: exception;

@@ -34,6 +34,9 @@ package d_clinic is
 
 private
 
+  -- File definitions
+  output: File_Type;
+
   -- Random numbers definitions
   subtype probability_range is Integer range 1 .. 100;
   subtype probability is Integer range probability_range'First .. probability_range'Last;

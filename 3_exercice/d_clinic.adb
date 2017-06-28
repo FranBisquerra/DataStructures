@@ -1,5 +1,17 @@
 package body d_clinic is
 
+  -- BEGIN FILE FUNCTIONS
+  procedure write_to_file(printable: in String) is
+  begin
+    -- to file
+    Open(File => output, Mode => Append_File, Name => "results.results");
+    Put_line(output, printable);
+    Close(output);
+    -- to console
+    Put_line(printable);
+  end write_to_file;
+  -- END FILE FUNCTIONS
+
   -- BEGIN PRINT FUNCTION
   -- *** Box item to string ***
   function box_to_string(box_to_print: in box_item) return String is
@@ -201,7 +213,9 @@ package body d_clinic is
       BOX.get(c.boxes, it, box_to_open_key, box_to_open);
 
       if box_to_open.is_opened = false then
-        Put_Line("Opening box: " & box_to_open_key'Img & ", " & box_to_string(box_to_open));
+
+        write_to_file("Opening box: " & box_to_open_key'Img & ", " & box_to_string(box_to_open));
+
         box_to_open.is_opened:= true;
         BOX.update(c.boxes, box_to_open_key, box_to_open);
         already_opened:= true;
@@ -247,10 +261,9 @@ package body d_clinic is
         box_to_enter:= (true, false, wr_item.name, calculate_box_cycles(wr_item.reason), wr_item.enter_cycle, wr_item.reason);
         entered:= true;
         
-        Put_Line("/++++++++++++++++++++++++++++++++++++++++++++++++/");
-        Put_Line("Entering box: " & box_to_enter_key'Img & ", " & box_to_string(box_to_enter));
-        Put_Line("/++++++++++++++++++++++++++++++++++++++++++++++++/");
-        Put_Line(" ");
+        write_to_file("/++++++++++++++++++++++++++++++++++++++++++++++++/" & NEW_LINE &
+                      "Entering box: " & box_to_enter_key'Img & ", " & box_to_string(box_to_enter) & NEW_LINE &
+                      "/++++++++++++++++++++++++++++++++++++++++++++++++/" & NEW_LINE);
 
         BOX.update(c.boxes, box_to_enter_key, box_to_enter);
       end if;
@@ -288,26 +301,26 @@ package body d_clinic is
     amount_visits: Natural:= 0;
   begin
     -- update pet historic
-    Put_Line("get from historic: "& SU.To_String(box_to_save.name));
+    write_to_file("get from historic: "& SU.To_String(box_to_save.name));
     H.get(c.historic, box_to_save.name, pet_historic);
 
-    Put_Line("current_cycle: " &current_cycle'Img& " enter_cycle" &box_to_save.enter_cycle'Img);
+    write_to_file("current_cycle: " &current_cycle'Img& " enter_cycle" &box_to_save.enter_cycle'Img);
     init_cycle:= current_cycle - (box_to_save.enter_cycle - 1);
     h_item:= (box_to_save.reason, init_cycle);
 
     HL.put(pet_historic.h_list, pet_historic.amount, h_item);
     pet_historic.amount:= pet_historic.amount + 1;
-    Put_Line("update historic: "& SU.To_String(box_to_save.name));
+    write_to_file("update historic: "& SU.To_String(box_to_save.name));
     H.update(c.historic, box_to_save.name, pet_historic);
 
     -- update helpers list
     helper_tree:= c.helper_sets(box_to_save.reason);
 
     if pet_not_in_helper(helper_tree, box_to_save.name) then
-      Put_Line("pet not in helper lists: "& SU.To_String(box_to_save.name));
+      write_to_file("pet not in helper lists: "& SU.To_String(box_to_save.name));
       HS.put(helper_tree, box_to_save.name, 1);      
     else
-      Put_Line("pet in helper lists: "& SU.To_String(box_to_save.name));
+      write_to_file("pet in helper lists: "& SU.To_String(box_to_save.name));
       HS.get(helper_tree, box_to_save.name, amount_visits);
       amount_visits:= amount_visits + 1;
       HS.update(helper_tree, box_to_save.name, amount_visits);
@@ -347,16 +360,14 @@ package body d_clinic is
       end if;  
     end loop;
 
-    Put_Line("INITIALIZING");
-    Put_Line("-----------------------------------------------");
+    write_to_file("INITIALIZING" & NEW_LINE & "-----------------------------------------------");
     BOX.first(c.boxes, it);
     while BOX.is_valid(it) loop
       BOX.get(c.boxes, it, printable_key, printable);
-      Put_Line("box: " & printable_key'Img & ", " & box_to_string(printable));
+      write_to_file("box: " & printable_key'Img & ", " & box_to_string(printable));
       BOX.next(c.boxes, it);
     end loop;  
-    Put_Line("-----------------------------------------------"); 
-    Put_Line("");   
+    write_to_file("-----------------------------------------------");   
   end init_clinic;
 
   -- *** Manages the boxes behaviour ***
@@ -371,41 +382,41 @@ package body d_clinic is
       while BOX.is_valid(it) loop
         BOX.get(c.boxes, it, box_to_update_key, box_to_update);
 
-        Put_Line("+ Checking box: " & box_to_update_key'Img & ", " & box_to_string(box_to_update));
+        write_to_file("+ Checking box: " & box_to_update_key'Img & ", " & box_to_string(box_to_update));
 
         if box_to_update.is_opened = true then
 
-          Put_Line("+ Box " & box_to_update_key'Img &" is opened");
+          write_to_file("+ Box " & box_to_update_key'Img &" is opened");
 
           if box_to_update.is_free = false then 
             update_box:= true;
-            Put_Line("+ Box " & box_to_update_key'Img &" is opened and not free");
+            write_to_file("+ Box " & box_to_update_key'Img &" is opened and not free");
 
             box_to_update.left_cycles:= box_to_update.left_cycles - 1;
 
             if box_to_update.left_cycles = 0 then
-              Put_Line("+ Box " & box_to_update_key'Img &" has no cycles left");
+              write_to_file("+ Box " & box_to_update_key'Img &" has no cycles left");
 
-              Put_Line("+ Saving historic at cycle: "&current_cycle'Img);
+              write_to_file("+ Saving historic at cycle: "&current_cycle'Img);
               save_historic(c, current_cycle, box_to_update);
 
               if can_close_box(c) = true then
-                Put_Line("+ Box " & box_to_update_key'Img &" can be closed");
+                write_to_file("+ Box " & box_to_update_key'Img &" can be closed");
                 close_box(c, box_to_update);
-                Put_Line("+ Box " & box_to_update_key'Img &" closed");
+                write_to_file("+ Box " & box_to_update_key'Img &" closed");
               else
-                Put_Line("+ Box " & box_to_update_key'Img &" can not be closed");
+                write_to_file("+ Box " & box_to_update_key'Img &" can not be closed");
                 box_to_update.is_free:= true;
-                Put_Line("+ Box " & box_to_update_key'Img &" freed");
+                write_to_file("+ Box " & box_to_update_key'Img &" freed");
               end if;
             end if;
           else 
-            Put_Line("+ Box " & box_to_update_key'Img &" is opened and free");
+            write_to_file("+ Box " & box_to_update_key'Img &" is opened and free");
             if can_close_box(c) = true then
               update_box:= true;
-              Put_Line("+ Box " & box_to_update_key'Img &" can be closed");
+              write_to_file("+ Box " & box_to_update_key'Img &" can be closed");
               close_box(c, box_to_update);
-              Put_Line("+ Box " & box_to_update_key'Img &" closed");
+              write_to_file("+ Box " & box_to_update_key'Img &" closed");
             end if;
           end if;
 
@@ -432,7 +443,7 @@ package body d_clinic is
     -- register it if it doesnt exist
 
     if not_registered(c, name) then
-      Put_Line("+ Registering pet: " & SU.To_String(name));
+      write_to_file("+ Registering pet: " & SU.To_String(name));
       H.put(c.historic, name, HL_pet); 
     end if;
     -- pass to the waiting room

@@ -253,7 +253,7 @@ package body d_clinic is
 
         if box_to_update.is_opened = true then
 
-        Put_Line("+ Box " & box_to_update_key'Img &" is opened");
+          Put_Line("+ Box " & box_to_update_key'Img &" is opened");
 
           if box_to_update.is_free = false then 
             update_box:= true;
@@ -309,9 +309,9 @@ package body d_clinic is
     HL_pet: HL.set;
   begin
     -- register it if it doesnt exist
-    if not_registered(c, name) then
-      H.put(c.historic, name, HL_pet); 
-    end if;
+    --if not_registered(c, name) then
+      --H.put(c.historic, name, HL_pet); 
+    --end if;
     -- pass to the waiting room
     WR_pet:= (name, calculate_wait_cycles(reason), reason);
     WR.put(waiting_room, WR_pet);

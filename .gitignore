@@ -6,6 +6,7 @@
 
 # Executable programs
 *.exec
+*.exe
 
 # Results
 *.results

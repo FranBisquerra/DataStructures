@@ -14,6 +14,7 @@ package d_hashing is
   procedure empty (s: out set);
   procedure put (s: in out set; k: in Unbounded_String; x: in item);
   procedure get(s: in set; k: in Unbounded_String; x: out item);
+  procedure update(s: in out set; k: in Unbounded_String; x: in item);
 
 private
 

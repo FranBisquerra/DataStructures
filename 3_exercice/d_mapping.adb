@@ -34,6 +34,18 @@ package body  d_mapping is
     p.x:= x;
   end update;
 
+  procedure get(s: in set; k: in key; x: out item) is
+    first: pnode renames s.first;
+    p: pnode;
+  begin
+    p:= first;
+
+    while p/=null and then p.k < k loop p:= p.next; end loop;
+    if p=null or else p.k/=k then raise does_not_exist; end if ;
+
+    x:= p.x;
+  end get;
+
   procedure remove(s: in out set; k: in key) is
     first: pnode renames s.first;
     pp, p: pnode;

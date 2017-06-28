@@ -16,6 +16,7 @@ package d_binarytree is
   procedure empty (t: out tree);
   procedure put (t: in out tree; k: in key; x: in item);
   procedure update(t: in out tree; k: in key; x: in item);
+  procedure get (t: in tree; k: in key; x: out item);
 
   -- ITERATOR
   type iterator is private;

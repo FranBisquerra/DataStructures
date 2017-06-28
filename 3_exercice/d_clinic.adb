@@ -7,8 +7,6 @@ package body d_clinic is
     Open(File => output, Mode => Append_File, Name => "results.results");
     Put_line(output, printable);
     Close(output);
-    -- to console
-    Put_line(printable);
   end write_to_file;
   -- END FILE FUNCTIONS
 

@@ -27,6 +27,26 @@ package body d_binarytree is
     put(root, k, x);
   end put;
 
+  procedure get(p: in pnode; k: in key; x: out item) is
+  begin
+    if p=null then 
+     raise does_not_exist;
+    else 
+      if k<p.k then get(p.lt, k, x);
+      elsif k>p.k then get(p.rt, k, x);
+      else x:= p.x;
+      end if;
+    end if;
+  exception
+    when storage_error => raise space_overflow;
+  end get;
+
+  procedure get(t: in tree; k: in key; x: out item) is
+    root: pnode renames t.root;
+  begin
+    get(root, k, x);
+  end get;
+
   procedure update(p: in pnode; k: in key; x: in item) is
   begin 
     if p=null then 

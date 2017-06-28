@@ -455,7 +455,7 @@ package body d_clinic is
     pet_from_wr: waiting_room_item;
     are_animals_left: Boolean:= true;
   begin 
-
+    write_to_file("CURRENT CYCLE [" & current_cycle'Img & " ]");
     manage_waiting_room(c.waiting_room, current_cycle);    
     manage_boxes(c, current_cycle);
     

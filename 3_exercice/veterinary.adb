@@ -5,6 +5,7 @@ with Ada.Directories; use Ada.Directories;
 with Ada.Integer_Text_IO; use Ada.Integer_Text_IO;
 with Ada.Numerics.Discrete_Random;
 with Ada.Strings.Unbounded;
+with Ada.Strings; use Ada.Strings;
 with Ada.Text_IO; use Ada.Text_IO;
 with d_clinic;
 with d_heap;
@@ -41,7 +42,7 @@ procedure veterinary is
   pets_readed: Integer:= 1;
 
   -- Exceptions
-  Invalid_Arguments_Number, Not_A_Number: exception;
+  Invalid_Arguments_Number: exception;
 
   -- Function and procedures
   function check_arguments(count: in Integer) return Boolean is
@@ -90,10 +91,56 @@ procedure veterinary is
     Put_Line("Press 'e' to finish the program.");
     Put("Select an option: ");
   end print_menu;
+
+  procedure show_waitting_room is
+  begin
+  Put_Line(SU.To_String(CL.retrieve_wait_room_pets(clinic)));
+  Ada.Text_IO.New_Line;
+  end show_waitting_room;
+
+  procedure pet_history is
+    str_pet_name: String(1..100) := (others => ' ');
+    last: Integer;
+  begin
+    -- Remove intro
+    Get_Immediate(key);
+    Put("Write pet name: ");
+    Get_Line(str_pet_name, last);
+
+    Put_Line(SU.To_String(CL.retrieve_pet_historic(clinic, SU.Trim(SU.To_Unbounded_String(str_pet_name), Both))));
+    Ada.Text_IO.New_Line;
+  end pet_history;
+
+  procedure list_visit_reason is
+    reason: CL.visit_reason;
+    str_reason: String(1..100) := (others => ' ');
+    str_reason_trim: SU.Unbounded_String;
+    last: Integer;
+  begin
+    -- Remove intro
+    Get_Immediate(key);
+    Put("Write reason type: ");
+    Get_Line(str_reason, last); 
+    str_reason_trim:= SU.Trim(SU.To_Unbounded_String(str_reason), Both);
+
+    if SU.To_String(str_reason_trim) = "CHECK" then reason:= CL.visit_reason'(CHECK);
+    elsif SU.To_String(str_reason_trim) = "EMERGENCY" then reason:= CL.visit_reason'(EMERGENCY);
+    elsif SU.To_String(str_reason_trim) ="CURE" then reason:= CL.visit_reason'(CURE);
+    elsif SU.To_String(str_reason_trim) ="SURGERY" then reason:= CL.visit_reason'(SURGERY);
+    else reason:= CL.visit_reason'(NONE);
+    end if;
+
+    if reason /= CL.visit_reason'(NONE) then
+      Put_Line(SU.To_String(CL.retrieve_visits_by_type(clinic, reason)));
+    else
+      Put_Line("Invalid reason.");
+    end if;
+    Ada.Text_IO.New_Line;
+  end list_visit_reason;
+
 begin
 
   Put_Line("Running veterinary process...");
-  New_Line;
 
   auto_exec:= check_arguments(Argument_Count);
   random_seed:= Integer'Value(Argument(1));
@@ -111,38 +158,40 @@ begin
 
   if auto_exec then
     -- Automatic mode
-    New_Line;
+    Ada.Text_IO.New_Line;
     Put_Line("+ Automatic mode");
     while current_cycle < cycles_to_execute loop
-      New_Line;
       -- Read pet
       if pets_readed <= pets_number then
+        Ada.Text_IO.New_Line;
         read_pet;
+        visit_reason:= generate_random_reason;
+        Put_Line(visit_reason'Img);
+        -- Put pet
+        CL.put(SU.To_Unbounded_String(toString(pet)), visit_reason, current_cycle, clinic);
       end if;
-      visit_reason:= generate_random_reason;
-      Put_Line(visit_reason'Img);
-      -- Put pet
       -- Advance cycle
+      CL.advance_cycle(clinic, current_cycle);
       current_cycle:= current_cycle + 1;
     end loop;
   else 
     -- Manual mode
-    New_Line;
+    Ada.Text_IO.New_Line;
     Put_Line("+ Manual mode");
     while true loop
-      New_Line;
+      Ada.Text_IO.New_Line;
       print_menu;
       while not continue loop
         Get_Immediate(key);
         if key /= ASCII.CR and key /= ASCII.LF then
-          New_Line;
+          Ada.Text_IO.New_Line;
           case key is
             when 'C'|'c' => continue:= true;
-            when 'W'|'w' => Put_Line("Show waitting room"); --show_waitting_room;
-            when 'H'|'h' => Put_Line("Show pet history"); --pet_history;
-            when 'L'|'l' => Put_Line("List visit reason"); --list_visit_reason;
+            when 'W'|'w' => Put_Line("Show waitting room"); show_waitting_room;
+            when 'H'|'h' => Put_Line("Show pet history"); pet_history;
+            when 'L'|'l' => Put_Line("List visit reason"); list_visit_reason;
             when 'E'|'e' => Put_Line("Execution aborted..."); return;
-            when others => Put_Line("Invalid option, please select one option."); New_Line;
+            when others => Put_Line("Invalid option, please select one option."); Ada.Text_IO.New_Line;
           end case;
           if not continue then print_menu; end if;
         end if;
@@ -150,16 +199,17 @@ begin
       -- Read pet
       if pets_readed <= pets_number then
         read_pet;
+        -- Put pet
+        CL.put(SU.To_Unbounded_String(toString(pet)), visit_reason, current_cycle, clinic);
       end if;
-      -- Put pet
       -- Advance cycle
+      CL.advance_cycle(clinic, current_cycle);
       -- Return to main loop
       continue:= false;
     end loop;
   end if;
 
   exception
-    when Not_A_Number => Put_Line("The input parameter/s must be numeric.");
     when Invalid_Arguments_Number => Put_Line("Invalid arguments number. " &
       "For 'manual mode' introduce <seed> and " &
       "for 'automatic mode' introduce <seed> <cycles_number>");
